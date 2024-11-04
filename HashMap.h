@@ -38,7 +38,7 @@ void defaultPut(HashMap hashMap,void *key,void *value);
 void* defaultGet(HashMap hashMap,void *key);
 bool defaultRemove(HashMap hashMap,void *key);
 bool defaultExists(HashMap hashMap,void *key);
-HashMap createHashMap(HashCode hashCode,Equal equal);
+HashMap createHashMap(HashCode hashCode,Equal equal,bool autoassign);
 void resetHashMap(HashMap hashMap,int listSize);
 typedef struct hashMapIterator {
     Entry entry;

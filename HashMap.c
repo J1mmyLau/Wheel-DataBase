@@ -233,11 +233,11 @@ void defaultClear(HashMap hashMap) {
     hashMap->listSize = 0;
 }
 
-HashMap createHashMap(HashCode hashCode, Equal equal) {
+HashMap createHashMap(HashCode hashCode, Equal equal, bool autoassign) {
 
     HashMap hashMap = newHashMap();
     hashMap->size = 0;
-    hashMap->listSize = 65536 ;
+    hashMap->listSize = 128 ;
     hashMap->hashCode = hashCode == NULL ? defaultHashCode : hashCode;
     hashMap->equal = equal == NULL ? defaultEqual : equal;
     hashMap->exists = defaultExists;
@@ -245,7 +245,7 @@ HashMap createHashMap(HashCode hashCode, Equal equal) {
     hashMap->put = defaultPut;
     hashMap->remove = defaultRemove;
     hashMap->clear = defaultClear;
-    hashMap->autoAssign = true;
+    hashMap->autoAssign = autoassign;
     hashMap->list = newEntryList(hashMap->listSize);
     Entry p = hashMap->list;
     for (int i = 0; i < hashMap->listSize; i++) {
