@@ -35,6 +35,7 @@ typedef struct hashMap{
 int defaultHashCode(HashMap hashMap,void *key);
 bool defaultEqual(void *key1,void *key2);
 void defaultPut(HashMap hashMap,void *key,void *value);
+void defaultClear(HashMap hashMap);
 void* defaultGet(HashMap hashMap,void *key);
 bool defaultRemove(HashMap hashMap,void *key);
 bool defaultExists(HashMap hashMap,void *key);
