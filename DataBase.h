@@ -14,7 +14,7 @@ typedef bool(*ExistsT)(Table tab,void *key);
 typedef struct table{
     char* name;
     long fix_time;
-    struct table *next;
+    struct table* next;
     HashMap map;
     PutT put;
     GetT get;
@@ -30,9 +30,10 @@ bool defaultRemoveT(Table tab, void *key);
 bool defaultExistsT(Table tab, void *key);
 void defaultClearT(Table tab);
 #define newTable() (Table)malloc(sizeof(struct table))
-#define newTableList(length) (Tabel)malloc(length*sizeof(struct table))
+#define newTableList(length) (Table)malloc(length*sizeof(struct table))
 typedef struct dataBase* DataBase;
-DataBase createDataBase(void* name,bool autoassig);
+typedef int(*HashCodeDB)(DataBase DB,void* nameT);
+DataBase createDataBase(HashCodeDB hashCode,void* name,bool autoassign);
 //typedef bool(*EqualDB)(void* name1,void* name2);
 typedef void(*PutDB)(DataBase DB,void* nameT,void* key,void* value);
 typedef void*(*GetDB)(DataBase DB,void* nameT,void* key);
@@ -43,7 +44,7 @@ typedef struct dataBase{
     int size;
     int listSize;
     void* name;
-    HashCode hashCode;
+    HashCodeDB hashCode;
     Table list;
     Equal equal;
     PutDB put;
@@ -54,13 +55,13 @@ typedef struct dataBase{
     bool autoAssign;
 }* DataBase;
 #define newDataBase() (DataBase)malloc(sizeof(struct dataBase));
-int defaultHashCodeDB(DataBase DB,void nameT);
+int defaultHashCodeDB(DataBase DB,void* nameT);
 void defaultPutDB(DataBase DB,void* nameT,void* key,void* value);
 void* defaultGetDB(DataBase DB,void* nameT,void* key);
 bool defaultRemoveDB(DataBase DB,void* nameT,void* key);
 bool defaultExistsDB(DataBase DB,void* nameT,void* key);
 void defaultClearDB(DataBase);
-void resetDataBase(DataBase DB,int listSize);
+//void resetDataBase(DataBase DB,int listSize);
 typedef struct dbIterator{
     Table tab;
     int count;
