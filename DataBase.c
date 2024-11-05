@@ -118,7 +118,7 @@ void defaultPutDB(DataBase DB,void* nameT,void* key,void* value){
     if(DB->list[index].name == NULL){
 
         DB->size++;
-        DB->list[index]=createTable(true);
+        DB->list[index]=createTable(DB->autoAssign);
         DB->list[index].name = nameT;
         DB->list->map->put(DB->list->map,key,value);
         printf("Create Table:%s, Hashcode:%d",nameT,index);
@@ -195,8 +195,53 @@ bool defaultExistsDB(DataBase DB,void* nameT,void* key){
         return false;
     }
     if(DB->equal(tab->name,nameT)){
-        do{
-            
-        }
+        return tab->map->exists(tab->map,key);
     }
+    if(tab->next != NULL){
+        do{
+            if(DB->equal(tab->name,nameT)){
+                return tab->map->exists(tab->map,key);
+            }
+            tab = tab->next;
+        }while(tab->next != NULL);
+        return false;
+    }
+    else{
+        return false;
+    }
+}
+void defaultClearDB(DataBase DB){
+    for(int i=0;i<DB->listSize;i++){
+        Table tab = DB->list[i].next;
+        while(tab != NULL){
+            Table next = tab->next;
+            free(tab);
+            tab = next;
+        }
+        DB->list[i].next = NULL;
+    }
+    free(DB->list);
+    DB->list = NULL;
+    DB->size = -1;
+    DB->listSize = 0;
+}
+DataBase createDataBase(HashCode hashCode,* name,bool autoassign){
+    DataBase DB = newDataBase();
+    DB->size = 0;
+    DB->list = 8;
+    DB->hashCode = hashCode == NULL ? defaultHashCodeDB : hashCode;
+    DB->equal = defaultEqual;
+    DB->exists = defaultExistsDB;
+    DB->get = defaultGetDB;
+    DB->put = defaultPutDB;
+    DB->remove = defaultRemoveDB;
+    DB->clear = defaultClearDB;
+    DB->autoAssign = autoassign;
+    DB->list = newTableList(DB->listSize);
+    Table p = DB->list;
+    for(int i=0;i<DB->listSize;i++){
+        p[i].name = p[i].next = NULL;
+        p[i].map->clear(p[i].map);
+    }
+    return DB;
 }

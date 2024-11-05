@@ -32,7 +32,7 @@ void defaultClearT(Table tab);
 #define newTable() (Table)malloc(sizeof(struct table))
 #define newTableList(length) (Tabel)malloc(length*sizeof(struct table))
 typedef struct dataBase* DataBase;
-DataBase createDataBase(char* name,bool autoassig);
+DataBase createDataBase(void* name,bool autoassig);
 //typedef bool(*EqualDB)(void* name1,void* name2);
 typedef void(*PutDB)(DataBase DB,void* nameT,void* key,void* value);
 typedef void*(*GetDB)(DataBase DB,void* nameT,void* key);
@@ -42,6 +42,7 @@ typedef void(*ClearDB)(DataBase DB);
 typedef struct dataBase{
     int size;
     int listSize;
+    void* name;
     HashCode hashCode;
     Table list;
     Equal equal;
