@@ -110,15 +110,14 @@ void defaultPutDB(DataBase DB,void* nameT,void* key,void* value){
     //if(DB->autoAssign && DB->size >= DB->listSize){
     //    resetDataBase(DB,DB->listSize * 2);
     //}
-    printf("%d",123);
     int index = DB->hashCode(DB,nameT);
     if(DB->list[index].name == NULL){
         DB->size++;
         DB->list[index].map=createTable(DB->autoAssign)->map;
         DB->list[index].name = nameT;
-        DB->list->map->put(DB->list->map,key,value);//!!!
-        printf("1\n");
-        printf("Create Table:%s, Hashcode:%d",(char*)nameT,index);
+        DB->list[index].map->put(DB->list[index].map,key,value);//!!!
+        //printf("1\n");
+        printf("Create Table:%s, Hashcode:%d\n",(char*)nameT,index);
     }
     else{
         Table current = &DB->list[index];

@@ -4,7 +4,7 @@
 #include "DataBase.h"
 int main(void){
     DataBase DB = createDataBase(NULL,"123",true);
-    printf("123");
-    DB->put(DB,"123","123","123");
+    DB->put(DB,"123","123","121323");
+    printf("%s",(char*)DB->get(DB,"123","123"));
     return 0;
 }
