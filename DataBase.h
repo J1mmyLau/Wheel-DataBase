@@ -64,7 +64,7 @@ void* defaultGetDB(DataBase DB,void* nameT,void* key);
 bool defaultRemoveDB(DataBase DB,void* nameT,void* key);
 bool defaultExistsDB(DataBase DB,void* nameT,void* key);
 void defaultClearDB(DataBase);
-//void resetDataBase(DataBase DB,int listSize);
+void resetDataBase(DataBase DB,int listSize);
 typedef struct dbIterator{
     Table tab;
     int count;
