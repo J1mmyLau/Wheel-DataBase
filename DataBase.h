@@ -40,6 +40,7 @@ typedef void*(*GetDB)(DataBase DB,void* nameT,void* key);
 typedef bool(*ExistsDB)(DataBase DB,void* nameT,void* key);
 typedef bool(*RemoveDB)(DataBase DB,void* nameT,void* key);
 typedef void(*ClearDB)(DataBase DB);
+typedef void(*PutT2DB)(DataBase DB,Table tab);
 typedef struct dataBase{
     int size;
     int listSize;
@@ -48,6 +49,7 @@ typedef struct dataBase{
     Table list;
     Equal equal;
     PutDB put;
+    PutT2DB putT;
     GetDB get;
     RemoveDB remove;
     ExistsDB exists;
@@ -56,6 +58,7 @@ typedef struct dataBase{
 }* DataBase;
 #define newDataBase() (DataBase)malloc(sizeof(struct dataBase));
 int defaultHashCodeDB(DataBase DB,void* nameT);
+void defaultputT2DB(DataBase DB,Table tab);
 void defaultPutDB(DataBase DB,void* nameT,void* key,void* value);
 void* defaultGetDB(DataBase DB,void* nameT,void* key);
 bool defaultRemoveDB(DataBase DB,void* nameT,void* key);

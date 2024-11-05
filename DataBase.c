@@ -68,7 +68,7 @@ DBIterator nextDBIterator(DBIterator iterator){
     }
     return iterator;
 }
-/*void resetDataBase(DataBase DB,int listSize){
+void resetDataBase(DataBase DB,int listSize){
     if(listSize < 8) return;
     Table tempList = newTableList(listSize);
     DBIterator iterator = createDBIterator(DB);
@@ -81,10 +81,10 @@ DBIterator nextDBIterator(DBIterator iterator){
     }
     freeDBIterator(&iterator);
     DB->size = 0;
-    for(int i=0; DB->listSize;i++){
+    for(int i=0;i < DB->listSize;i++){
         Table current = &DB->list[i];
         current->name = NULL;
-        current->map =NULL;
+        current->map = NULL;
         if(current->next != NULL){
             while(current->next !=NULL){
                 Table temp = current->next->next;
@@ -93,6 +93,7 @@ DBIterator nextDBIterator(DBIterator iterator){
             }
         }
     }
+    
     DB->listSize = listSize;
     Table relist = (Table)realloc(DB->list,DB->listSize * sizeof(struct table));
     if(relist != NULL){
@@ -101,22 +102,45 @@ DBIterator nextDBIterator(DBIterator iterator){
         relist = NULL;
     }
     for(int i=0; i < length; i++){
-        DB->put(DB,tempList[i].name,tempList[i].map);
+        DB->putT(DB,&tempList[i]);
     }
     free(tempList);
     tempList = NULL;
-}*/
+}
+void defaultputT2DB(DataBase DB,Table tab){
+    int index = DB->hashCode(DB,tab->name);
+    if(DB->list[index].name == NULL){
+        DB->size++;
+        DB->list[index].map = tab->map;
+        DB->list[index].name = tab->name;
+    }
+    else{
+        Table current = &DB->list[index];
+        while(current != NULL){
+            if(DB->equal(tab->name,current->name)){
+                current->map = tab->map;
+                current->name = tab->name;
+            }
+            current = current->next;
+        }
+        Table temp = createTable(DB->autoAssign);
+        temp->map = tab->map;
+        temp->name = tab->name;
+        temp->next = DB->list[index].next;
+        DB->list[index].next = temp;//!!!
+        DB->size++;
+    }
+}
 void defaultPutDB(DataBase DB,void* nameT,void* key,void* value){
-    //if(DB->autoAssign && DB->size >= DB->listSize){
-    //    resetDataBase(DB,DB->listSize * 2);
-    //}
+    if(DB->autoAssign && DB->size >= DB->listSize){
+        resetDataBase(DB,DB->listSize * 2);
+    }
     int index = DB->hashCode(DB,nameT);
     if(DB->list[index].name == NULL){
         DB->size++;
         DB->list[index].map=createTable(DB->autoAssign)->map;
         DB->list[index].name = nameT;
         DB->list[index].map->put(DB->list[index].map,key,value);//!!!
-        //printf("1\n");
         printf("Create Table:%s, Hashcode:%d\n",(char*)nameT,index);
     }
     else{
@@ -124,10 +148,11 @@ void defaultPutDB(DataBase DB,void* nameT,void* key,void* value){
         while(current != NULL){
             if(DB->equal(nameT,current->name)){
                 current->map->put(current->map,key,value);
+                return;
             }
             current = current->next;
         };
-        Table tab = newTable();
+        Table tab = createTable(DB->autoAssign);
         tab->name = nameT;
         tab->map->put(tab->map,key,value);
         DB->list[index].next = tab;
@@ -150,7 +175,7 @@ bool defaultRemoveDB(DataBase DB,void* nameT,void* key){
     }
     bool result = false;
     if(DB->equal(tab->name,nameT)){
-        result=tab->remove(tab,key);
+        result=tab->map->remove(tab->map,key);
         if(tab->map->size == 0){
             if(tab->next != NULL){
                 Table temp = tab->next;
@@ -170,7 +195,7 @@ bool defaultRemoveDB(DataBase DB,void* nameT,void* key){
         tab = tab->next;
         while(tab != NULL){
             if(DB->equal(tab->name,nameT)){
-                result=tab->remove(tab,key);
+                result=tab->map->remove(tab->map,key);
                 if(tab->map->size == 0){
                     p->next = tab->next;
                     free(tab);
@@ -181,6 +206,9 @@ bool defaultRemoveDB(DataBase DB,void* nameT,void* key){
             p = tab;
             tab = tab->next;
         }
+    }
+    if(result && DB->autoAssign && DB->size < DB->listSize / 2){
+        resetDataBase(DB,DB->listSize / 2);
     }
     return result;
 }
@@ -227,7 +255,7 @@ DataBase createDataBase(HashCodeDB hashCode,void* name,bool autoassign){
     DB->listSize = 8;
     DB->hashCode = hashCode == NULL ? defaultHashCodeDB : hashCode;
     DB->name = name;
-    //DB->hashCode = defaultHashCodeDB;
+    DB->putT =defaultputT2DB;
     DB->equal = defaultEqual;
     DB->exists = defaultExistsDB;
     DB->get = defaultGetDB;
@@ -238,8 +266,15 @@ DataBase createDataBase(HashCodeDB hashCode,void* name,bool autoassign){
     DB->list = newTableList(DB->listSize);
     Table p = DB->list;
     for(int i=0;i<DB->listSize;i++){
+        //p[i] = *createTable(autoassign);
         p[i].name = NULL;
         p[i].next = NULL;
+        p[i].clear = defaultClearT;
+        p[i].exists = defaultExistsT;
+        p[i].get = defaultGetT;
+        p[i].put = defaultPutT;
+        p[i].remove = defaultRemoveT;
+        p[i].fix_time = 0;
         //p[i].map->clear(p[i].map);
     }
     return DB;
