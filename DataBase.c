@@ -110,9 +110,11 @@ void resetDataBase(DataBase DB,int listSize){
 void defaultputT2DB(DataBase DB,Table tab){
     int index = DB->hashCode(DB,tab->name);
     if(DB->list[index].name == NULL){
+        DB->list[index] = *createTable(DB->autoAssign);
         DB->size++;
         DB->list[index].map = tab->map;
         DB->list[index].name = tab->name;
+
     }
     else{
         Table current = &DB->list[index];
@@ -128,6 +130,7 @@ void defaultputT2DB(DataBase DB,Table tab){
         temp->name = tab->name;
         temp->next = DB->list[index].next;
         DB->list[index].next = temp;//!!!
+
         DB->size++;
     }
 }
@@ -156,6 +159,7 @@ void defaultPutDB(DataBase DB,void* nameT,void* key,void* value){
         tab->name = nameT;
         tab->map->put(tab->map,key,value);
         DB->list[index].next = tab;
+        printf("Create Table:%s, Hashcode:%d\n",(char*)nameT,index);
         DB->size++;
     }
 }
@@ -185,7 +189,8 @@ bool defaultRemoveDB(DataBase DB,void* nameT,void* key){
                 free(temp);
             }
             else{
-                bool tmp=tab->clear;
+                //printf("##%s\n",(char*)tab->name);
+                defaultClearT(tab);
             }
             DB->size--; 
         }
@@ -269,6 +274,7 @@ DataBase createDataBase(HashCodeDB hashCode,void* name,bool autoassign){
         //p[i] = *createTable(autoassign);
         p[i].name = NULL;
         p[i].next = NULL;
+        p[i].map = createHashMap(NULL,NULL,autoassign);
         p[i].clear = defaultClearT;
         p[i].exists = defaultExistsT;
         p[i].get = defaultGetT;

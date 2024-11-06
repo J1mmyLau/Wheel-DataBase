@@ -34,7 +34,6 @@ void defaultClearT(Table tab);
 typedef struct dataBase* DataBase;
 typedef int(*HashCodeDB)(DataBase DB,void* nameT);
 DataBase createDataBase(HashCodeDB hashCode,void* name,bool autoassign);
-//typedef bool(*EqualDB)(void* name1,void* name2);
 typedef void(*PutDB)(DataBase DB,void* nameT,void* key,void* value);
 typedef void*(*GetDB)(DataBase DB,void* nameT,void* key);
 typedef bool(*ExistsDB)(DataBase DB,void* nameT,void* key);
