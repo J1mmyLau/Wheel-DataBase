@@ -73,7 +73,7 @@ void resetDataBase(DataBase DB,int listSize){
     Table tempList = newTableList(listSize);
     DBIterator iterator = createDBIterator(DB);
     int length = DB->size;
-    for(int index =0; hasNextDBIterator(iterator);index++){
+    for(int index = 0; hasNextDBIterator(iterator);index++){
         iterator = nextDBIterator(iterator);
         tempList[index].name = iterator->tab->name;
         tempList[index].map = iterator->tab->map;
@@ -98,14 +98,14 @@ void resetDataBase(DataBase DB,int listSize){
     Table relist = (Table)realloc(DB->list,DB->listSize * sizeof(struct table));
     if(relist != NULL){
         DB->list = relist;
-        free(relist); //!!!
+        //free(relist); //!!!
         relist = NULL;
     }
     for(int i=0; i < length; i++){
         DB->putT(DB,&tempList[i]);
     }
-    free(tempList);
-    tempList = NULL;
+    //free(tempList);
+    //tempList = NULL;
 }
 void defaultputT2DB(DataBase DB,Table tab){
     int index = DB->hashCode(DB,tab->name);
@@ -130,7 +130,6 @@ void defaultputT2DB(DataBase DB,Table tab){
         temp->name = tab->name;
         temp->next = DB->list[index].next;
         DB->list[index].next = temp;//!!!
-
         DB->size++;
     }
 }
@@ -190,7 +189,7 @@ bool defaultRemoveDB(DataBase DB,void* nameT,void* key){
             }
             else{
                 //printf("##%s\n",(char*)tab->name);
-                defaultClearT(tab);
+                tab->clear(tab);
             }
             DB->size--; 
         }
